@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
-void main() {
-  runApp(new MyApp());
-}
+void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final title = 'Cached Images';
+    final title = 'Basic List';
 
     return new MaterialApp(
       title: title,
@@ -16,12 +13,21 @@ class MyApp extends StatelessWidget {
         appBar: new AppBar(
           title: new Text(title),
         ),
-        body: new Center(
-          child: new CachedNetworkImage(
-            placeholder: new CircularProgressIndicator(),
-            imageUrl:
-            'https://github.com/flutter/website/blob/master/src/_includes/code/layout/lakes/images/lake.jpg?raw=true',
-          ),
+        body: new ListView(
+          children: <Widget>[
+            new ListTile(
+              leading: new Icon(Icons.map),
+              title: new Text('Map'),
+            ),
+            new ListTile(
+              leading: new Icon(Icons.photo),
+              title: new Text('Album'),
+            ),
+            new ListTile(
+              leading: new Icon(Icons.phone),
+              title: new Text('Phone'),
+            ),
+          ],
         ),
       ),
     );
