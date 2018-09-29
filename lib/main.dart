@@ -1,66 +1,56 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 
-//import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-void main() => runApp(new MyApp());
+void main() {
+  runApp(new MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sample App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    final appName = 'Custom Themes';
+
+    return new MaterialApp(
+      title: appName,
+      theme: new ThemeData(
+        brightness: Brightness.dark,
+        primaryColor: Colors.lightBlue[800],
+        accentColor: Colors.cyan[600],
       ),
-      home: SampleAppPage(),
+      home: new MyHomePage(
+        title: appName,
+      ),
     );
   }
 }
 
-class SampleAppPage extends StatefulWidget {
-  SampleAppPage({Key key}) : super(key: key);
+class MyHomePage extends StatelessWidget {
+  final String title;
 
-  @override
-  _SampleAppPageState createState() => _SampleAppPageState();
-}
-
-class _SampleAppPageState extends State<SampleAppPage> {
-  List widgets = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    loadData();
-  }
+  MyHomePage({Key key, @required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Sample App"),
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text(title),
+      ),
+      body: new Center(
+        child: new Container(
+          color: Theme.of(context).accentColor,
+          child: new Text(
+            'Text with a background color',
+            style: Theme.of(context).textTheme.title,
+          ),
         ),
-        body: ListView.builder(
-            itemCount: widgets.length,
-            itemBuilder: (BuildContext context, int position) {
-              return getRow(position);
-            }));
-  }
-
-  Widget getRow(int i) {
-    return Padding(
-        padding: EdgeInsets.all(10.0),
-        child: Text("Row ${widgets[i]["title"]}")
+      ),
+      floatingActionButton: new Theme(
+        data: Theme.of(context).copyWith(accentColor: Colors.yellow),
+        child: new FloatingActionButton(
+          onPressed: null,
+          child: new Icon(Icons.add),
+        ),
+      ),
     );
-  }
-
-  loadData() async {
-    String dataURL = "https://jsonplaceholder.typicode.com/posts";
-    http.Response response = await http.get(dataURL);
-    setState(() {
-      widgets = json.decode(response.body);
-    });
   }
 }
