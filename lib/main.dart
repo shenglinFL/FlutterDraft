@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
-void main() => runApp(new MyApp());
+void main() {
+  runApp(new MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var title = 'Web Images';
+    final title = 'Fade in images';
 
     return new MaterialApp(
       title: title,
@@ -13,8 +16,17 @@ class MyApp extends StatelessWidget {
         appBar: new AppBar(
           title: new Text(title),
         ),
-        body: new Image.network(
-          'https://github.com/flutter/website/blob/master/src/_includes/code/layout/lakes/images/lake.jpg?raw=true',
+        body: new Stack(
+          children: <Widget>[
+            new Center(child: new CircularProgressIndicator()),
+            new Center(
+              child: new FadeInImage.memoryNetwork(
+                placeholder: kTransparentImage,
+                image:
+                'https://github.com/flutter/website/blob/master/src/_includes/code/layout/lakes/images/lake.jpg?raw=true',
+              ),
+            ),
+          ],
         ),
       ),
     );
