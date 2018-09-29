@@ -1,86 +1,62 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:dio/dio.dart';
 
-void main() {
-  runApp(new MaterialApp(
-    title: 'Returning Data',
-    home: new HomeScreen(),
-  ));
-}
 
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Returning Data Demo'),
-      ),
-      body: new Center(child: new SelectionButton()),
-    );
-  }
-}
+main() async {
+  var dio = new Dio();
+  dio.options.baseUrl = "http://www.dtworkroom.com/doris/1/2.0.0/";
+  dio.options.connectTimeout = 5000; //5s
+  dio.options.receiveTimeout=5000;
+  dio.options.headers = {
+    'user-agent': 'dio',
+    'common-header': 'xx'
+  };
 
-class SelectionButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new RaisedButton(
-      onPressed: () {
-        _navigateAndDisplaySelection(context);
-      },
-      child: new Text('Pick an option, any option!'),
-    );
-  }
+  var u=new Uri(scheme: "https", host: "www.baidu.com", queryParameters: {
+    "xx":"xx",
+    "yy":"dd"
+  });
 
-  // A method that launches the SelectionScreen and awaits the result from
-  // Navigator.pop!
-  _navigateAndDisplaySelection(BuildContext context) async {
-    // Navigator.push returns a Future that will complete after we call
-    // Navigator.pop on the Selection Screen!
-    final result = await Navigator.push(
-      context,
-      new MaterialPageRoute(builder: (context) => new SelectionScreen()),
-    );
+  print(u);
 
-    // After the Selection Screen returns a result, show it in a Snackbar!
-    Scaffold
-        .of(context)
-        .showSnackBar(new SnackBar(content: new Text("$result")));
-  }
-}
+  // Add request interceptor
+  dio.interceptor.request.onSend = (Options options) async {
+    // return ds.resolve(new Response(data:"xxx"));
+    // return ds.reject(new DioError(message: "eh"));
+    return options;
+  };
 
-class SelectionScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Pick an option'),
-      ),
-      body: new Center(
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: new RaisedButton(
-                onPressed: () {
-                  // Close the screen and return "Yep!" as the result
-                  Navigator.pop(context, 'Yep!');
-                },
-                child: new Text('Yep!'),
-              ),
-            ),
-            new Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: new RaisedButton(
-                onPressed: () {
-                  // Close the screen and return "Nope!" as the result
-                  Navigator.pop(context, 'Nope.');
-                },
-                child: new Text('Nope.'),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
+  Response response = await dio.get("https://www.google.com/");
+  print(response.data);
+
+  // Download a file
+  response = await dio.download(
+      "https://www.google.com/", "./xx.html", onProgress: (received, total) {
+    print('$received,$total');
+  });
+
+  // Create a FormData
+  FormData formData = new FormData.from({
+    "name": "wendux",
+    "age": 25,
+    "file": new UploadFileInfo(new File("./example/upload.txt"), "upload.txt")
+  });
+
+  // Send FormData
+  response = await dio.post("/test", data: formData);
+  print(response);
+
+  response = await dio.post("/test",
+    data: {
+      "id": 8,
+      "info": {
+        "name": "wendux",
+        "age": 25
+      }
+    },
+    // Send data with "application/x-www-form-urlencoded" format
+    options: new Options(
+        contentType: ContentType.parse("application/x-www-form-urlencoded")),
+  );
+  print(response.data);
 }
